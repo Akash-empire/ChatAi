@@ -172,7 +172,7 @@ body {
 /* MOBILE */
 @media(max-width:500px) {
   .chat-container {
-    height: 65vh;
+    height: 70vh;
     border-radius: 0;
   }
 }
