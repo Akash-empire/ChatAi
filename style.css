@@ -175,4 +175,7 @@ body {
     height: 89vh;
     border-radius: 0;
   }
+  .ps {
+     position: sticky;
+  }
 }
