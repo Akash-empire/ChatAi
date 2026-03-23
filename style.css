@@ -120,6 +120,7 @@ textarea { flex: 1; background: transparent; border: none; color: white; font-si
 @media (max-width: 768px) {
     .glass-sidebar { display: none; } /* Hide sidebar, use full width */
     #chat, .input-area { padding: 20px 5%; }
+    .app-shell { display: flex; height: 90vh; width: 100vw; }
 }
 
 /* MOBILE */
