@@ -114,7 +114,7 @@ let replies = [
 /* SEND */
 function sendMessage() {
   let input = document.getElementById("msg");
-  let text = input.value.trim();
+  let text = input.value;
   if (text === "") return;
 
   addMessage(text, "sent");
@@ -169,7 +169,7 @@ function generateReply(text) {
 function getFallback(text) {
   if (text.includes("how")) return "Can you explain more?";
   if (text.includes("why")) return "Interesting question 🤔";
-  // if (text.includes("what")) return "Let me think...";
+  if (text.includes("what")) return "Let me think...";
   return "Tell me more 😊";
 }
 
