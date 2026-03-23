@@ -5,6 +5,7 @@ const chat = document.getElementById("chat");
 // ================= MEMORY =================
 let history = [];
 
+
 // ================= SEND =================
 function sendMessage() {
   let input = document.getElementById("msg");
