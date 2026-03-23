@@ -1,125 +1,124 @@
-const chat = document.getElementById("chat");
-let conversation = [];
-AIzaSyBGc2HI9VW2wGa0lP4GKJM-VLQVcDQbSjI
-/* Q&A */
-let replies = [
-  { q: ["anything else"], a: "Always more to learn 😄" },
-  { q: ["hi", "hii", "hiii", "hello","helo", "hey"], a: "Hello 👋" },
+var API_KEY = "AIzaSyCS_tmR7Z7yoZLdV1l_jtJsh-obovwx-z4";
 
-  { q: ["fine"], a: "Good to hear 😊" }
-];
+    const chat = document.getElementById("chat");
 
-/* SEND */
-function sendMessage() {
-  let input = document.getElementById("msg");
-  let text = input.value.trim();
-  if (text === "") return;
+    // ================= MEMORY =================
+    let history = [];
 
-  addMessage(text, "sent");
-  conversation.push({ role: "user", text: text });
-  input.value = "";
+    // ================= SEND =================
+    function sendMessage() {
+      let input = document.getElementById("msg");
+      let text = input.value.trim();
 
-  showTyping();
+      if (text === "") return;
 
-  setTimeout(() => {
-    removeTyping();
-    let reply = generateReply(text);
-    addMessage(reply, "received");
-    conversation.push({ role: "bot", text: reply });
-  }, 1000);
-}
+      addMessage(text, "sent");
+      input.value = "";
 
-/* FIXED MATCHING */
-function generateReply(text) {
-  let userText = text.toLowerCase().replace(/[^\w\s]/gi, "").trim();
+      showTyping();
 
-  // EXACT MATCH
-  let found = replies.find(item =>
-    item.q.some(k => userText === k)
-  );
-  if (found) return found.a;
+      setTimeout(async () => {
+        removeTyping();
 
-  // SAFE WORD MATCH
-  let words = userText.split(" ");
-  found = replies.find(item =>
-    item.q.some(k => words.includes(k))
-  );
-  if (found) return found.a;
+        let reply = await generateReply(text);
 
-  // CONTEXT
-  let lastUser = conversation.slice(-2, -1)[0];
-  if (lastUser) {
-    let prev = lastUser.text.toLowerCase();
+        addMessage(reply, "received");
 
-    if (prev.includes("how are you") && userText.includes("you")) {
-      return "I'm doing great! 😊";
+      }, 100);
     }
 
-    if (prev.includes("help") && userText.includes("yes")) {
-      return "Tell me what you need 👍";
+    // ================= GEMINI API =================
+    async function generateReply(text) {
+      // 1. Update history with user input
+      history.push({
+        role: "user",
+        parts: [{ text: text }]
+      });
+
+      try {
+        // Use the STABLE v1 endpoint instead of v1beta
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              contents: history
+            })
+          }
+        );
+
+        // Check if the server actually returned a 200 OK
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("API Error Details:", errorData);
+          return "Connection error. Please try again later. 🛠️";
+        }
+
+        const data = await response.json();
+
+        // Safely extract the reply using Optional Chaining
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!reply) {
+          return "I'm sorry, I couldn't generate a response. Please rephrase.";
+        }
+
+        // 2. Store AI reply in history for conversation context
+        history.push({
+          role: "model",
+          parts: [{ text: reply }]
+        });
+
+        return reply;
+
+      } catch (err) {
+        console.error("Network Error:", err);
+        return "Network error. Check your internet connection. 🌐";
+      }
     }
-  }
 
-  return getFallback(userText);
-}
+    // ================= UI =================
+    function addMessage(content, type) {
+      const chat = document.getElementById("chat");
+      const div = document.createElement("div");
+      div.className = "message " + type;
 
-/* FALLBACK */
-function getFallback(text) {
-  if (text.includes("how")) return "Can you explain more?";
-  if (text.includes("why")) return "Interesting question 🤔";
-  if (text.includes("what")) return "Let me think...";
-  return "Tell me more 😊";
-}
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-/* ADD MESSAGE */
-function addMessage(content, type) {
-  let div = document.createElement("div");
-  div.className = "message " + type;
-  let time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  div.innerHTML = content + `<div>${time}</div>`;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
+      // Using innerHTML for formatting, but textContent for safety
+      div.innerHTML = `
+        <div class="text-content">${content}</div>
+        <span class="timestamp">${time}</span>
+    `;
 
-/* TYPING */
-function showTyping() {
-  let div = document.createElement("div");
-  div.className = "message received";
-  div.id = "typing";
-  div.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
-  chat.appendChild(div);
-}
+      chat.appendChild(div);
 
-function removeTyping() {
-  let t = document.getElementById("typing");
-  if (t) t.remove();
-}
+      // Smooth scroll to bottom
+      chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
 
-/* ENTER KEY */
-document.getElementById("msg").addEventListener("keypress", e => {
-  if (e.key === "Enter") sendMessage();
-});
+    function showTyping() {
+      const chat = document.getElementById("chat");
+      const div = document.createElement("div");
+      div.className = "message received";
+      div.id = "typing";
+      div.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-/* FILE */
-document.getElementById("file").addEventListener("change", function () {
-  let file = this.files[0];
-  if (!file) return;
+    function removeTyping() {
+      let t = document.getElementById("typing");
+      if (t) t.remove();
+    }
 
-  let reader = new FileReader();
-
-  reader.onload = function (e) {
-    let content = file.type.startsWith("image/")
-      ? `<img src="${e.target.result}">`
-      : `<a href="${e.target.result}" download>${file.name}</a>`;
-
-    addMessage(content, "sent");
-    showTyping();
-
-    setTimeout(() => {
-      removeTyping();
-      addMessage("File received 👍", "received");
-    }, 1000);
-  };
-
-  reader.readAsDataURL(file);
-});
+    // ENTER KEY
+    document.getElementById("msg").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") sendMessage();
+    });
