@@ -1,4 +1,4 @@
-var API_KEY = "AIzaSyAxJ5tW7Mx4X0buomvKFPXL2DRKyiK-BQY";
+var API_KEY = "AIzaSyAlLpzzM1W9GykD8tD0_Q2QF7zcqYxHsGY";
 
 const chat = document.getElementById("chat");
 
