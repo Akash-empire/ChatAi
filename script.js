@@ -4,8 +4,8 @@ let conversation = [];
 /* Q&A */
 let replies = [
   { q: ["anything else"], a: "Always more to learn 😄" },
-  { q: ["hi", "hii", "hiii", "hello", "hey"], a: "Hello 👋" },
-  { q: ["your name", "who are you"], a: "I am your chatbot 🤖" },
+  { q: ["hi", "hii", "hiii", "hello","helo", "hey"], a: "Hello 👋" },
+  
   { q: ["bye"], a: "Goodbye 👋" },
   { q: ["help"], a: "I am here to help you 😊" },
   { q: ["yes"], a: "Great! Tell me more 👍" },
@@ -18,6 +18,7 @@ let replies = [
   { q: ["can we talk"], a: "Of course! I'm always ready to chat" },
   { q: ["do you like chatting"], a: "Yes, I enjoy chatting with you 😊" },
   { q: ["what is your purpose"], a: "To help and chat with you" },
+  
   { q: ["are you real"], a: "I'm virtual but here to help you" },
   { q: ["where are you"], a: "I live inside this chat 😄" },
   { q: ["do you sleep"], a: "Nope, I'm always awake" },
@@ -106,6 +107,8 @@ let replies = [
   { q: ["tell me truth"], a: "Honesty is important" },
   { q: ["give me idea"], a: "Start something small today" },
   { q: ["what next"], a: "Keep moving forward" },
+  { q: ["your name", "who are you", "what is your name"], a: "I am your chatbot 🤖" },
+  { q: ["what is your name"], a: "I am your chatbot 🤖" },
   { q: ["fine"], a: "Good to hear 😊" }
 ];
 
